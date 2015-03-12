@@ -119,6 +119,7 @@ ComBat <- function(dat, batch, mod=NULL, par.prior=TRUE,prior.plots=FALSE) {
   }else{
     cat("Finding nonparametric adjustments\n")
     for (i in 1:n.batch){
+      cat("\tBatch round: ", i, "\n")
       temp <- int.eprior(as.matrix(s.data[,batches[[i]]]),gamma.hat[i,],delta.hat[i,])
       gamma.star <- rbind(gamma.star,temp[1,])
       delta.star <- rbind(delta.star,temp[2,])

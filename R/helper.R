@@ -94,7 +94,7 @@ L <- function(x,g.hat,d.hat){prod(dnorm(x,g.hat,sqrt(d.hat)))}
 int.eprior <- function(sdat,g.hat,d.hat){
 	g.star <- d.star <- NULL
 	r <- nrow(sdat)
-	for(i in 1:r){
+	all_res <- parallel::mclapply(1:r, function(i) {
 		g <- g.hat[-i]
 		d <- d.hat[-i]		
 		x <- sdat[i,!is.na(sdat[i,])]
@@ -107,9 +107,15 @@ int.eprior <- function(sdat,g.hat,d.hat){
 		LH[LH=="NaN"]=0
 		g.star <- c(g.star,sum(g*LH)/sum(LH))
 		d.star <- c(d.star,sum(d*LH)/sum(LH))
-		#if(i%%1000==0){cat(i,'\n')}
-		}
-	adjust <- rbind(g.star,d.star)
+		if(i%%100==0){cat("\t\tround",i,'\n')}
+
+    list(g.star = g.star, d.star = d.star)
+})
+
+  adjust <- sapply(all_res, function(res) {
+    c(res$g.star, res$d.star)
+})
+
 	rownames(adjust) <- c("g.star","d.star")
 	adjust	
 	} 
